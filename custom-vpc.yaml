@@ -4,24 +4,24 @@ Description: Create a custom VPC with public and private subnets across two AZs
 Parameters:
   VpcCIDR:
     Type: String
-    Default: 10.70.0.0/16
+    Default: 10.0.0.0/16
     Description: CIDR block for the VPC
 
   PublicSubnet1CIDR:
     Type: String
-    Default: 10.70.1.0/24
+    Default: 10.0.1.0/24
 
   PublicSubnet2CIDR:
     Type: String
-    Default: 10.70.2.0/24
+    Default: 10.0.2.0/24
 
   PrivateSubnet1CIDR:
     Type: String
-    Default: 10.70.101.0/24
+    Default: 10.0.101.0/24
 
   PrivateSubnet2CIDR:
     Type: String
-    Default: 10.70.102.0/24
+    Default: 10.0.102.0/24
 
 Resources:
   VPC:
@@ -32,14 +32,14 @@ Resources:
       EnableDnsHostnames: true
       Tags:
         - Key: Name
-          Value: CustomVPC
+          Value: Acit-Staging-VPC
 
   InternetGateway:
     Type: AWS::EC2::InternetGateway
     Properties:
       Tags:
         - Key: Name
-          Value: CustomIGW
+          Value: Acit-staging-IGW
 
   AttachGateway:
     Type: AWS::EC2::VPCGatewayAttachment
@@ -56,7 +56,7 @@ Resources:
       AvailabilityZone: !Select [0, !GetAZs '']
       Tags:
         - Key: Name
-          Value: PublicSubnet1
+          Value:acit-staging-web-one
 
   PublicSubnet2:
     Type: AWS::EC2::Subnet
@@ -67,7 +67,7 @@ Resources:
       AvailabilityZone: !Select [1, !GetAZs '']
       Tags:
         - Key: Name
-          Value: PublicSubnet2
+          Value:acit-staging-web-two
 
   PrivateSubnet1:
     Type: AWS::EC2::Subnet
@@ -77,7 +77,7 @@ Resources:
       AvailabilityZone: !Select [0, !GetAZs '']
       Tags:
         - Key: Name
-          Value: PrivateSubnet1
+          Value: acit-staging-app-one
 
   PrivateSubnet2:
     Type: AWS::EC2::Subnet
@@ -87,7 +87,7 @@ Resources:
       AvailabilityZone: !Select [1, !GetAZs '']
       Tags:
         - Key: Name
-          Value: PrivateSubnet2
+          Value: acit-staging-app-two
 
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
@@ -95,7 +95,7 @@ Resources:
       VpcId: !Ref VPC
       Tags:
         - Key: Name
-          Value: PublicRouteTable
+          Value: acit-staging-web-rt
 
   PublicRoute:
     Type: AWS::EC2::Route
