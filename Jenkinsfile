@@ -7,11 +7,11 @@ pipeline {
     REGION         = 'us-east-2'
 
     // CIDR parameters (adjust as needed)
-    VPC_CIDR           = '10.0.0.0/16'
-    PUBLIC1_CIDR       = '10.0.1.0/24'
-    PUBLIC2_CIDR       = '10.0.2.0/24'
-    PRIVATE1_CIDR      = '10.0.101.0/24'
-    PRIVATE2_CIDR      = '10.0.102.0/24'
+    VPC_CIDR           = '10.70.0.0/16'
+    PUBLIC1_CIDR       = '10.70.1.0/24'
+    PUBLIC2_CIDR       = '10.70.2.0/24'
+    PRIVATE1_CIDR      = '10.70.101.0/24'
+    PRIVATE2_CIDR      = '10.70.102.0/24'
   }
 
   options {
@@ -22,14 +22,14 @@ pipeline {
   stages {
     stage('Checkout Source') {
       steps {
-        echo '📦 Checking out repo'
+        echo 'Checking out repo'
         checkout scm
       }
     }
 
     stage('Install cfn-lint (optional)') {
       steps {
-        echo '🔍 Installing linter'
+        echo 'Installing linter'
         sh '''
           python3 -m venv .venv
           . .venv/bin/activate
@@ -40,7 +40,7 @@ pipeline {
 
     stage('Lint Template') {
       steps {
-        echo '🧪 Validating CloudFormation template'
+        echo 'Validating CloudFormation template'
         sh '''
           . .venv/bin/activate
           .venv/bin/cfn-lint --template "$TEMPLATE_FILE"
@@ -50,7 +50,7 @@ pipeline {
 
     stage('Deploy VPC Stack') {
       steps {
-        echo '🚀 Deploying VPC with CloudFormation'
+        echo 'Deploying VPC with CloudFormation'
         sh '''
           aws cloudformation deploy \
             --stack-name "$STACK_NAME" \
@@ -87,10 +87,10 @@ pipeline {
       sh 'rm -rf .venv || true'
     }
     success {
-      echo '✅ VPC stack deployed successfully!'
+      echo 'VPC stack deployed successfully!'
     }
     failure {
-      echo '❌ Deployment failed. See logs above.'
+      echo 'Deployment failed. See logs above.'
     }
   }
 }
