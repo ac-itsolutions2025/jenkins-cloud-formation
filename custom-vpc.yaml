@@ -4,24 +4,24 @@ Description: Create a custom VPC with public and private subnets across two AZs
 Parameters:
   VpcCIDR:
     Type: String
-    Default: 10.0.0.0/16
+    Default: 10.70.0.0/16
     Description: CIDR block for the VPC
 
   PublicSubnet1CIDR:
     Type: String
-    Default: 10.0.1.0/24
+    Default: 10.70.1.0/24
 
   PublicSubnet2CIDR:
     Type: String
-    Default: 10.0.2.0/24
+    Default: 10.70.2.0/24
 
   PrivateSubnet1CIDR:
     Type: String
-    Default: 10.0.101.0/24
+    Default: 10.70.101.0/24
 
   PrivateSubnet2CIDR:
     Type: String
-    Default: 10.0.102.0/24
+    Default: 10.70.102.0/24
 
 Resources:
   VPC:
