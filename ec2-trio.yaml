@@ -1,0 +1,76 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Launch 3 Amazon EC2 instances in an existing VPC and subnet (us-east-2)
+
+Parameters:
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: The VPC where the instances will reside
+
+  SubnetId:
+    Type: AWS::EC2::Subnet::Id
+    Description: The subnet to launch the EC2 instances in
+
+  InstanceType:
+    Type: String
+    Default: t2.micro
+    AllowedValues:
+      - t3.micro
+      - t3.small
+      - t3.medium
+      - t2.micro
+    Description: EC2 instance type
+
+  AmiId:
+    Type: AWS::EC2::Image::Id
+    Description: AMI ID to use (must be valid in us-east-2)
+
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: Name of an existing EC2 key pair for SSH access
+
+Resources:
+  EC2Instance1:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      ImageId: !Ref AmiId
+      SubnetId: !Ref SubnetId
+      KeyName: !Ref KeyName
+      Tags:
+        - Key: Name
+          Value: EC2-Instance-1
+
+  EC2Instance2:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      ImageId: !Ref AmiId
+      SubnetId: !Ref SubnetId
+      KeyName: !Ref KeyName
+      Tags:
+        - Key: Name
+          Value: EC2-Instance-2
+
+  EC2Instance3:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      ImageId: !Ref AmiId
+      SubnetId: !Ref SubnetId
+      KeyName: !Ref KeyName
+      Tags:
+        - Key: Name
+          Value: EC2-Instance-3
+
+Outputs:
+  Instance1Id:
+    Description: EC2 Instance ID #1
+    Value: !Ref EC2Instance1
+
+  Instance2Id:
+    Description: EC2 Instance ID #2
+    Value: !Ref EC2Instance2
+
+  Instance3Id:
+    Description: EC2 Instance ID #3
+    Value: !Ref EC2Instance3
