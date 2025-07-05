@@ -1,0 +1,89 @@
+pipeline {
+  agent any
+
+  environment {
+    STACK_NAME         = 'acit-eks-cluster'
+    TEMPLATE_FILE      = 'eks-cluster-and-nodegroup.yaml'
+    REGION             = 'us-east-1'
+
+    // Parameters passed to the template
+    CLUSTER_NAME       = 'acit-cluster'
+    K8S_VERSION        = '1.33'
+    ADMIN_ROLE_ARN     = 'arn:aws:iam::123456789012:role/EKSControlPlaneRole'   // 🔐 Replace with actual
+    NODE_ROLE_ARN      = 'arn:aws:iam::123456789012:role/EKSNodeInstanceRole'  // 🔐 Replace with actual
+    VPC_ID             = 'vpc-0ab04656e45f63cb7'        // Replace with your actual VPC ID
+    SUBNET_IDS         = 'subnet-0f466e83f27e135df,subnet-03d42a7f417e15476' // Comma-separated list
+    NODEGROUP_NAME     = 'acit-nodegroup'
+    INSTANCE_TYPES     = 't3.medium'
+    DESIRED_CAPACITY   = '2'
+    MIN_SIZE           = '1'
+    MAX_SIZE           = '4'
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        echo '📦 Checking out repo'
+        checkout scm
+      }
+    }
+
+    stage('Deploy EKS Cluster and Node Group') {
+      steps {
+        echo '🚀 Deploying EKS stack with CloudFormation'
+        sh '''
+          aws cloudformation deploy \
+            --stack-name "$STACK_NAME" \
+            --template-file "$TEMPLATE_FILE" \
+            --region "$REGION" \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --parameter-overrides \
+              ClusterName="$CLUSTER_NAME" \
+              KubernetesVersion="$K8S_VERSION" \
+              ClusterAdminRoleArn="$ADMIN_ROLE_ARN" \
+              NodeInstanceRoleArn="$NODE_ROLE_ARN" \
+              VpcId="$VPC_ID" \
+              SubnetIds="$SUBNET_IDS" \
+              NodeGroupName="$NODEGROUP_NAME" \
+              InstanceTypes="$INSTANCE_TYPES" \
+              DesiredCapacity="$DESIRED_CAPACITY" \
+              MinSize="$MIN_SIZE" \
+              MaxSize="$MAX_SIZE"
+        '''
+      }
+    }
+
+    stage('Wait for Cluster Readiness') {
+      steps {
+        echo '⏳ Waiting for EKS cluster to become ACTIVE...'
+        sh '''
+          aws eks wait cluster-active \
+            --name "$CLUSTER_NAME" \
+            --region "$REGION"
+        '''
+      }
+    }
+
+    stage('Describe EKS Cluster') {
+      steps {
+        echo '📡 Fetching EKS cluster details'
+        sh '''
+          aws eks describe-cluster \
+            --name "$CLUSTER_NAME" \
+            --region "$REGION" \
+            --query "cluster.{Name:name, Status:status, Endpoint:endpoint}" \
+            --output table
+        '''
+      }
+    }
+  }
+
+  post {
+    success {
+      echo '✅ EKS cluster and node group deployed!'
+    }
+    failure {
+      echo '❌ Deployment failed. Please check the logs above.'
+    }
+  }
+}
