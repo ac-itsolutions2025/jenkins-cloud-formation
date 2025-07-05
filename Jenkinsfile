@@ -69,7 +69,7 @@ pipeline {
 
     stage('Describe Stack Outputs') {
       steps {
-        echo '📡 Fetching VPC outputs'
+        echo 'Fetching VPC outputs'
         sh '''
           aws cloudformation describe-stacks \
             --region "$REGION" \
@@ -83,7 +83,7 @@ pipeline {
 
   post {
     always {
-      echo '🧹 Cleaning up virtual environment...'
+      echo 'Cleaning up virtual environment...'
       sh 'rm -rf .venv || true'
     }
     success {
