@@ -56,7 +56,7 @@ Resources:
       AvailabilityZone: !Select [0, !GetAZs '']
       Tags:
         - Key: Name
-          Value:acit-staging-web-one
+          Value: acit-staging-web-one
 
   PublicSubnet2:
     Type: AWS::EC2::Subnet
@@ -67,7 +67,7 @@ Resources:
       AvailabilityZone: !Select [1, !GetAZs '']
       Tags:
         - Key: Name
-          Value:acit-staging-web-two
+          Value: acit-staging-web-two
 
   PrivateSubnet1:
     Type: AWS::EC2::Subnet
